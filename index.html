@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CryptoX Exchange</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+*{-webkit-tap-highlight-color:transparent}
+body{background:#0a0a1a;font-family:-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:rgba(20,20,40,0.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);box-shadow:0 25px 50px -12px rgba(0,0,0,0.8)}
+.glow{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(255,193,7,0.1)}50%{box-shadow:0 0 40px rgba(255,193,7,0.2)}}
+.slide-in{animation:slideIn 0.4s ease-out}
+@keyframes slideIn{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.shake{animation:shake 0.5s ease-in-out}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.btn-touch{touch-action:manipulation;transition:all 0.15s ease;position:relative;overflow:hidden}
+.btn-touch:active{transform:scale(0.95)}
+.btn-touch .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.3);transform:scale(0);animation:ripple 0.6s linear;pointer-events:none}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+input:focus{border-color:#f7931a !important;box-shadow:0 0 0 3px rgba(247,147,26,0.1)}
+.checkbox-custom{appearance:none;width:20px;height:20px;border:2px solid #4a4a6a;border-radius:6px;cursor:pointer;position:relative;flex-shrink:0}
+.checkbox-custom:checked{background:#f7931a;border-color:#f7931a}
+.checkbox-custom:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:14px}
+.tab-active{background:rgba(247,147,26,0.15);color:#f7931a;border-color:#f7931a}
+.confetti{position:fixed;width:10px;height:10px;pointer-events:none;z-index:9999}
+@keyframes confetti-fall{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div id="app" class="w-full max-w-md mx-auto p-4">
+<div class="card rounded-3xl p-6 glow slide-in">
+<div class="text-center mb-6">
+<div class="flex items-center justify-center gap-3 mb-2">
+<div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-yellow-500/25">
+<i class="fas fa-bitcoin text-white"></i>
+</div>
+<span class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">CryptoX</span>
+</div>
+<p class="text-gray-400 text-sm">Secure • Fast • Real-Time Trading</p>
+</div>
+<div class="flex rounded-xl bg-[#1a1a3e] p-1 mb-6">
+<button id="signupTab" class="flex-1 py-2.5 rounded-lg text-sm font-medium transition-all tab-active"><i class="fas fa-user-plus mr-2"></i>Sign Up</button>
+<button id="loginTab" class="flex-1 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white transition-all"><i class="fas fa-sign-in-alt mr-2"></i>Login</button>
+</div>
+<div id="signupForm" class="space-y-4">
+<div>
+<label class="text-xs text-gray-400 font-medium mb-1 block"><i class="fas fa-user mr-1"></i>Username</label>
+<div class="relative">
+<input type="text" id="username" placeholder="Choose a username" class="w-full bg-[#1a1a3e] border border-gray-700 rounded-xl px-4 py-3.5 text-white text-sm focus:border-yellow-500 outline-none transition">
+<div class="absolute right-3 top-1/2 -translate-y-1/2"><span id="usernameStatus" class="text-xs"></span></div>
+</div>
+<div id="usernameHelp" class="text-[10px] text-gray-500 mt-1 hidden">✓ Available (min 3 characters)</div>
+</div>
+<div>
+<label class="text-xs text-gray-400 font-medium mb-1 block"><i class="fas fa-envelope mr-1"></i>Email Address</label>
+<input type="email" id="email" placeholder="you@example.com" class="w-full bg-[#1a1a3e] border border-gray-700 rounded-xl px-4 py-3.5 text-white text-sm focus:border-yellow-500 outline-none transition">
+<div id="emailHelp" class="text-[10px] text-gray-500 mt-1 hidden">✓ Valid email format</div>
+</div>
+<div>
+<label class="text-xs text-gray-400 font-medium mb-1 block"><i class="fas fa-lock mr-1"></i>Password</label>
+<div class="relative">
+<input type="password" id="password" placeholder="Min 12 chars with uppercase, number, special" class="w-full bg-[#1a1a3e] border border-gray-700 rounded-xl px-4 py-3.5 text-white text-sm focus:border-yellow-500 outline-none transition pr-12">
+<button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"><i class="fas fa-eye"></i></button>
+</div>
+<div class="mt-2 space-y-1">
+<div class="flex gap-1">
+<div id="strengthBar1" class="h-1 flex-1 rounded-full bg-gray-700 transition-all"></div>
+<div id="strengthBar2" class="h-1 flex-1 rounded-full bg-gray-700 transition-all"></div>
+<div id="strengthBar3" class="h-1 flex-1 rounded-full bg-gray-700 transition-all"></div>
+<div id="strengthBar4" class="h-1 flex-1 rounded-full bg-gray-700 transition-all"></div>
+</div>
+<div class="flex justify-between text-[10px]">
+<span id="strengthLabel" class="text-gray-500">Weak</span>
+<span id="strengthChecklist" class="text-gray-500"><span id="checkLength">✕</span> 12+ chars <span id="checkUpper" class="ml-2">✕</span> A-Z <span id="checkSpecial" class="ml-2">✕</span> !@#</span>
+</div>
+</div>
+</div>
+<div>
+<label class="text-xs text-gray-400 font-medium mb-1 block"><i class="fas fa-gift mr-1"></i>Referral Code <span class="text-gray-500">(optional)</span></label>
+<input type="text" id="referral" placeholder="Enter referral code for bonus" class="w-full bg-[#1a1a3e] border border-gray-700 rounded-xl px-4 py-3.5 text-white text-sm focus:border-yellow-500 outline-none transition">
+</div>
+<div class="flex items-start gap-3">
+<input type="checkbox" id="termsCheck" class="checkbox-custom mt-0.5">
+<label for="termsCheck" class="text-xs text-gray-400 leading-relaxed">I agree to the <a href="#" class="text-yellow-400 hover:underline">Terms of Service</a> and <a href="#" class="text-yellow-400 hover:underline">Privacy Policy</a>. I am 18+.</label>
+</div>
+<button id="signupBtn" class="w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl font-bold text-sm btn-touch"><i class="fas fa-rocket mr-2"></i>Create Account</button>
+<div class="flex justify-between text-[10px] text-gray-500 pt-2 border-t border-gray-800">
+<span><i class="fas fa-users mr-1"></i><span id="totalUsers">1,247</span> users online</span>
+<span><i class="fas fa-clock mr-1"></i><span id="signupCount">12</span> signed up today</span>
+</div>
+</div>
+<div id="loginForm" class="space-y-4 hidden">
+<div><label class="text-xs text-gray-400 font-medium mb-1 block">Email or Username</label><input type="text" id="loginEmail" placeholder="Enter your email" class="w-full bg-[#1a1a3e] border border-gray-700 rounded-xl px-4 py-3.5 text-white text-sm focus:border-yellow-500 outline-none"></div>
+<div><label class="text-xs text-gray-400 font-medium mb-1 block">Password</label><input type="password" id="loginPassword" placeholder="Enter your password" class="w-full bg-[#1a1a3e] border border-gray-700 rounded-xl px-4 py-3.5 text-white text-sm focus:border-yellow-500 outline-none"></div>
+<div class="flex items-center justify-between text-xs"><label class="flex items-center gap-2 text-gray-400"><input type="checkbox" class="checkbox-custom"> Remember me</label><a href="#" class="text-yellow-400">Forgot password?</a></div>
+<button id="loginBtn" class="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl font-bold text-sm btn-touch"><i class="fas fa-sign-in-alt mr-2"></i>Login</button>
+</div>
+<div id="successMessage" class="hidden text-center py-6 slide-in">
+<div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-check-circle text-4xl text-green-400"></i></div>
+<h3 class="text-xl font-bold text-white mb-2">Account Created! 🎉</h3>
+<p class="text-gray-400 text-sm">Welcome, <span id="displayUsername" class="text-yellow-400 font-bold"></span>!</p>
+<p class="text-gray-500 text-xs mt-1">Verification email sent to <span id="displayEmail" class="text-gray-300"></span></p>
+<button id="continueBtn" class="mt-4 px-8 py-3 bg-yellow-500 rounded-xl font-bold text-sm btn-touch"><i class="fas fa-arrow-right mr-2"></i>Continue</button>
+</div>
+</div>
+<div id="notifications" class="fixed bottom-4 left-4 right-4 max-w-md mx-auto space-y-2 z-50 pointer-events-none"></div>
+<div id="confettiContainer"></div>
+</div>
+<script>
+const state={totalUsers:1247,signupCount:12,users:[{username:'cryptoking',email:'king@crypto.com',joined:'2024-01-15'},{username:'btcholder',email:'holder@btc.com',joined:'2024-01-20'},{username:'ethtrader',email:'trader@eth.com',joined:'2024-02-01'}],isPasswordVisible:false,currentTab:'signup'};
+const $=id=>document.getElementById(id);
+const signupForm=$('signupForm'),loginForm=$('loginForm'),successMsg=$('successMessage');
+const signupTab=$('signupTab'),loginTab=$('loginTab');
+const username=$('username'),email=$('email'),password=$('password'),referral=$('referral'),termsCheck=$('termsCheck');
+const signupBtn=$('signupBtn'),loginBtn=$('loginBtn'),continueBtn=$('continueBtn');
+
+signupTab.addEventListener('click',()=>{state.currentTab='signup';signupTab.className='flex-1 py-2.5 rounded-lg text-sm font-medium transition-all tab-active';loginTab.className='flex-1 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white transition-all';signupForm.classList.remove('hidden');loginForm.classList.add('hidden');successMsg.classList.add('hidden')});
+loginTab.addEventListener('click',()=>{state.currentTab='login';loginTab.className='flex-1 py-2.5 rounded-lg text-sm font-medium transition-all tab-active';signupTab.className='flex-1 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white transition-all';signupForm.classList.add('hidden');loginForm.classList.remove('hidden');successMsg.classList.add('hidden')});
+
+username.addEventListener('input',function(){const val=this.value.trim(),status=$('usernameStatus'),help=$('usernameHelp');if(val.length<3){status.innerHTML='<i class="fas fa-times-circle text-red-400"></i>';help.classList.add('hidden');return;}const exists=state.users.some(u=>u.username.toLowerCase()===val.toLowerCase());if(exists){status.innerHTML='<i class="fas fa-times-circle text-red-400"></i>';help.textContent='✕ Username already taken';help.className='text-[10px] text-red-400 mt-1';help.classList.remove('hidden')}else{status.innerHTML='<i class="fas fa-check-circle text-green-400"></i>';help.textContent='✓ Available!';help.className='text-[10px] text-green-400 mt-1';help.classList.remove('hidden')}});
+
+email.addEventListener('input',function(){const val=this.value.trim(),help=$('emailHelp'),emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;if(val&&emailRegex.test(val)){help.textContent='✓ Valid email format';help.className='text-[10px] text-green-400 mt-1';help.classList.remove('hidden')}else if(val){help.textContent='✕ Please enter a valid email';help.className='text-[10px] text-red-400 mt-1';help.classList.remove('hidden')}else{help.classList.add('hidden')}});
+
+password.addEventListener('input',function(){const val=this.value,bars=[$('strengthBar1'),$('strengthBar2'),$('strengthBar3'),$('strengthBar4')],label=$('strengthLabel'),checkLen=$('checkLength'),checkUpper=$('checkUpper'),checkSpecial=$('checkSpecial');const hasLength=val.length>=12,hasUpper=/[A-Z]/.test(val),hasLower=/[a-z]/.test(val),hasNumber=/[0-9]/.test(val),hasSpecial=/[^A-Za-z0-9]/.test(val);checkLen.textContent=hasLength?'✓':'✕';checkLen.className=hasLength?'text-green-400':'text-red-400';checkUpper.textContent=(hasUpper&&hasLower)?'✓':'✕';checkUpper.className=(hasUpper&&hasLower)?'text-green-400':'text-red-400';checkSpecial.textContent=(hasNumber&&hasSpecial)?'✓':'✕';checkSpecial.className=(hasNumber&&hasSpecial)?'text-green-400':'text-red-400';let score=0;if(hasLength)score++;if(hasUpper&&hasLower)score++;if(hasNumber)score++;if(hasSpecial)score++;const colors=['#ff4444','#ff8800','#ffcc00','#00ff88'],labels=['Very Weak','Weak','Strong','Very Strong'];bars.forEach((bar,i)=>{if(i<score){bar.className='h-1 flex-1 rounded-full transition-all';bar.style.background=colors[i]}else{bar.className='h-1 flex-1 rounded-full bg-gray-700 transition-all'}});label.textContent=val?labels[Math.min(score,3)]:'Weak';label.className=`text-[10px] ${score>=3?'text-green-400':'text-gray-500'}`});
+
+$('togglePassword').addEventListener('click',function(){state.isPasswordVisible=!state.isPasswordVisible;password.type=state.isPasswordVisible?'text':'password';this.innerHTML=state.isPasswordVisible?'<i class="fas fa-eye-slash"></i>':'<i class="fas fa-eye"></i>'});
+
+setInterval(()=>{if(Math.random()>0.7){state.signupCount++;$('signupCount').textContent=state.signupCount}const change=Math.floor(Math.random()*6)-3;state.totalUsers=Math.max(1000,state.totalUsers+change);$('totalUsers').textContent=state.totalUsers.toLocaleString()},8000);
+
+function notify(msg,type='info'){const container=$('notifications');const colors={success:'border-green-500 bg-green-500/10',error:'border-red-500 bg-red-500/10',warning:'border-yellow-500 bg-yellow-500/10',info:'border-blue-500 bg-blue-500/10'};const icons={success:'fa-check-circle text-green-400',error:'fa-times-circle text-red-400',warning:'fa-exclamation-triangle text-yellow-400',info:'fa-info-circle text-blue-400'};const el=document.createElement('div');el.className=`card border ${colors[type]} rounded-xl p-3 slide-in flex items-start gap-2 text-sm pointer-events-auto`;el.innerHTML=`<i class="fas ${icons[type]} mt-0.5"></i><span class="flex-1">${msg}</span><button onclick="this.parentElement.remove()" class="text-gray-500 hover:text-white">✕</button>`;container.appendChild(el);setTimeout(()=>{if(el.parentElement)el.remove()},5000)}
+
+function launchConfetti(){const container=$('confettiContainer');const colors=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6bff','#ff9f43'];for(let i=0;i<50;i++){const el=document.createElement('div');el.className='confetti';el.style.left=Math.random()*100+'%';el.style.top='-10px';el.style.background=colors[Math.floor(Math.random()*colors.length)];el.style.width=(Math.random()*8+4)+'px';el.style.height=(Math.random()*8+4)+'px';el.style.borderRadius=Math.random()>0.5?'50%':'2px';el.style.animation=`confetti-fall ${Math.random()*2+2}s linear forwards`;el.style.animationDelay=Math.random()*1.5+'s';container.appendChild(el);setTimeout(()=>el.remove(),4000)}}
+
+function handleSignup(e){e.preventDefault();const usernameVal=username.value.trim(),emailVal=email.value.trim(),passwordVal=password.value,referralVal=referral.value.trim();if(!usernameVal||usernameVal.length<3){notify('⚠️ Username must be at least 3 characters','warning');username.focus();username.parentElement.parentElement.classList.add('shake');setTimeout(()=>username.parentElement.parentElement.classList.remove('shake'),500);return}if(state.users.some(u=>u.username.toLowerCase()===usernameVal.toLowerCase())){notify('❌ Username already taken!','error');return}const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;if(!emailRegex.test(emailVal)){notify('⚠️ Please enter a valid email address','warning');email.focus();return}if(state.users.some(u=>u.email.toLowerCase()===emailVal.toLowerCase())){notify('❌ Email already registered!','error');return}const hasLength=passwordVal.length>=12,hasUpper=/[A-Z]/.test(passwordVal),hasLower=/[a-z]/.test(passwordVal),hasNumber=/[0-9]/.test(passwordVal),hasSpecial=/[^A-Za-z0-9]/.test(passwordVal);const score=[hasLength,hasUpper&&hasLower,hasNumber,hasSpecial].filter(Boolean).length;if(score<3){notify('⚠️ Password must be at least 12 characters with uppercase, number, and special character','warning');password.focus();return}if(!termsCheck.checked){notify('⚠️ Please agree to the Terms of Service','warning');termsCheck.focus();return}state.users.push({username:usernameVal,email:emailVal,joined:new Date().toISOString().split('T')[0]});state.signupCount++;$('signupCount').textContent=state.signupCount;signupForm.classList.add('hidden');successMsg.classList.remove('hidden');$('displayUsername').textContent=usernameVal;$('displayEmail').textContent=emailVal;$('totalUsers').textContent=state.totalUsers.toLocaleString();launchConfetti();notify(`🎉 Welcome ${usernameVal}! Your account has been created.`,'success');if(referralVal){notify('🎁 Referral bonus applied! You earned 5 USDT!','info')}}
+
+function handleLogin(e){e.preventDefault();const emailVal=$('loginEmail').value.trim(),passwordVal=$('loginPassword').value.trim();if(!emailVal||!passwordVal){notify('⚠️ Please enter both email and password','warning');return}const user=state.users.find(u=>u.email.toLowerCase()===emailVal.toLowerCase());if(!user){notify('❌ No account found with this email','error');return}if(passwordVal.length<6){notify('❌ Invalid password','error');return}notify(`✅ Welcome back ${user.username}! Login successful.`,'success');setTimeout(()=>{signupForm.classList.remove('hidden');loginForm.classList.add('hidden');successMsg.classList.remove('hidden');$('displayUsername').textContent=user.username;$('displayEmail').textContent=user.email},1000)}
+
+signupBtn.addEventListener('click',handleSignup);
+loginBtn.addEventListener('click',handleLogin);
+continueBtn.addEventListener('click',()=>{notify('🚀 Redirecting to dashboard...','info');setTimeout(()=>{successMsg.classList.add('hidden');signupForm.classList.remove('hidden');username.value='';email.value='';password.value='';referral.value='';termsCheck.checked=false;['strengthBar1','strengthBar2','strengthBar3','strengthBar4'].forEach(id=>{document.getElementById(id).className='h-1 flex-1 rounded-full bg-gray-700 transition-all'});$('strengthLabel').textContent='Weak';notify('🔄 Ready for next signup!','info')},1000)});
+
+document.addEventListener('keydown',(e)=>{if(e.key==='Enter'){if(state.currentTab==='signup'&&!signupForm.classList.contains('hidden')){handleSignup(e)}else if(state.currentTab==='login'&&!loginForm.classList.contains('hidden')){handleLogin(e)}}});
+
+document.querySelectorAll('.btn-touch').forEach(btn=>{btn.addEventListener('click',function(e){const rect=this.getBoundingClientRect();const ripple=document.createElement('span');ripple.className='ripple';const size=Math.max(rect.width,rect.height);ripple.style.width=ripple.style.height=size+'px';ripple.style.left=(e.clientX-rect.left-size/2)+'px';ripple.style.top=(e.clientY-rect.top-size/2)+'px';this.appendChild(ripple);setTimeout(()=>ripple.remove(),600)})});
+
+setTimeout(()=>{notify('👋 Welcome! Create your account to start trading.','info')},1000);
+setInterval(()=>{if(Math.random()>0.85&&state.currentTab==='signup'){const names=['CryptoWhale','BTCKing','EthereumQueen','DeFiMaster','NFTCollector','HODLer'];const name=names[Math.floor(Math.random()*names.length)];notify(`🟢 ${name} just joined CryptoX!`,'info')}},15000);
+console.log('🚀 CryptoX Live!');
+</script>
+</body>
+</html>
